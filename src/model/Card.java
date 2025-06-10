@@ -48,6 +48,6 @@ public class Card {
 
     @Override
     public String toString() {
-        return "Card [ID=" + cardId + ", Name=" + name + ", Cost=" + costCoins + ", ExpID=" + expansionId + "]";
+        return name;
     }
 }

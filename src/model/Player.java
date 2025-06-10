@@ -34,6 +34,6 @@ public class Player {
 
         @Override
     public String toString() {
-        return "Player [ID=" + playerId + ", Username=" + username + ", RealName=" + realName + "]";
+        return username;
     }
 }

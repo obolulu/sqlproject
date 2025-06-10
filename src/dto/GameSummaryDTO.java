@@ -20,13 +20,9 @@ public class GameSummaryDTO {
     private List<GameParticipantDTO> participants; // List of nested DTOs
     private List<GameSupplyCardDTO> kingdomCards; // List of nested DTOs (supply cards)
 
-    public GameSummaryDTO(int gameId, LocalDateTime gameDate, Integer durationMinutes, String notes,
-                          String winnerUsername, List<GameParticipantDTO> participants,
+    public GameSummaryDTO(int gameId, String winnerUsername, List<GameParticipantDTO> participants,
                           List<GameSupplyCardDTO> kingdomCards) {
         this.gameId = gameId;
-        this.gameDate = gameDate;
-        this.durationMinutes = durationMinutes;
-        this.notes = notes;
         this.winnerUsername = winnerUsername;
         this.participants = participants;
         this.kingdomCards = kingdomCards;

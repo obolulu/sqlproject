@@ -64,8 +64,10 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jPanelRegions" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
-                  <Component id="jTextFieldExpansionName" pref="180" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="164" max="-2" attributes="0"/>
+                  <Component id="jTextFieldExpansionName" pref="191" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
+                  <Component id="jLabelprice" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="182" max="-2" attributes="0"/>
@@ -84,7 +86,10 @@
                           <Component id="jButtonShowCardDetails" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jTextFieldExpansionName" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jTextFieldExpansionName" alignment="3" max="-2" attributes="0"/>
+                              <Component id="jLabelprice" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -181,6 +186,11 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonShowCardDetailsActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabelprice">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="price"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

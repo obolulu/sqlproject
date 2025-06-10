@@ -46,4 +46,26 @@ public class RegionDAO {
         }
         return region;
     }
+
+    public float getPrice(String region, int expansionid){
+        //expansionregionprices only keeps region_id. we need to join Regions to get the region_name
+        String sql = "SELECT price FROM ExpansionRegionPrices " +
+                     "JOIN Regions ON ExpansionRegionPrices.region_id = Regions.region_id " +
+                     "WHERE Regions.region_name = ? AND expansion_id = ?";
+        float price = 0.0f;
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, region);
+            pstmt.setInt(2, expansionid);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    price = rs.getFloat("price");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching price for region: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return price;
+    }
 }

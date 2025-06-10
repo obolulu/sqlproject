@@ -17,11 +17,8 @@ public class Game {
     private String notes;
     private Integer winnerPlayerId; // FK to Players, can be null
 
-    public Game(int gameId, LocalDateTime gameDate, Integer durationMinutes, String notes, Integer winnerPlayerId) {
+    public Game(int gameId, Integer winnerPlayerId) {
         this.gameId = gameId;
-        this.gameDate = gameDate;
-        this.durationMinutes = durationMinutes;
-        this.notes = notes;
         this.winnerPlayerId = winnerPlayerId;
     }
 

@@ -15,11 +15,10 @@ public class GameParticipantDTO {
     private int finalScore;
     private int turnOrder;
 
-    public GameParticipantDTO(int playerId, String username, String realName, int finalScore, int turnOrder) {
+    public GameParticipantDTO(int playerId, String username, String realName, int turnOrder) {
         this.playerId = playerId;
         this.username = username;
         this.realName = realName;
-        this.finalScore = finalScore;
         this.turnOrder = turnOrder;
     }
 

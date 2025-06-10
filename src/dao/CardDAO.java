@@ -234,7 +234,7 @@ public class CardDAO {
         return cardDetailsList;
     }
 
-    public List<CardDetailsDTO> getCardsByExpansionDetails(int expansionId) {
+    public List<CardDetailsDTO> getCardDetailsByExpansionDetails(int expansionId) {
         List<CardDetailsDTO> cardDetailsList = new ArrayList<>();
         String cardsSql = "SELECT c.card_id, c.name, c.cost_coins, c.cost_potions, c.cost_debt, " +
                 "c.text_description, e.name AS expansion_name " +
@@ -280,5 +280,32 @@ public class CardDAO {
             e.printStackTrace();
         }
         return cardDetailsList;
+    }
+
+    public List<Card> getCardsByExpansionId(int expansionId){
+        List<Card> cards = new ArrayList<>();
+        String sql = "SELECT card_id, name, cost_coins, cost_potions, cost_debt, " +
+                "text_description, expansion_id FROM Cards WHERE expansion_id = ? ORDER BY cost_coins";
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, expansionId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    cards.add(new Card(
+                            rs.getInt("card_id"),
+                            rs.getString("name"),
+                            rs.getInt("cost_coins"),
+                            rs.getInt("cost_potions"),
+                            rs.getInt("cost_debt"),
+                            rs.getString("text_description"),
+                            rs.getInt("expansion_id")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching cards by expansion ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return cards;
     }
 }

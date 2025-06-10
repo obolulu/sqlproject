@@ -18,6 +18,7 @@ import model.Region;
 public class CardsByExpansionFrame extends javax.swing.JFrame {
     CardDAO cardDAO = new CardDAO();
     private RegionDAO regionDAO = new RegionDAO();
+    private int expansionId;
     /**
      * Creates new form CardsByExpansionFrame
      * @param expansionId
@@ -44,6 +45,7 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
         jButtonRegionSelect = new javax.swing.JButton();
         jTextFieldExpansionName = new javax.swing.JTextField();
         jButtonShowCardDetails = new javax.swing.JButton();
+        jLabelprice = new javax.swing.JLabel();
         CardsPanel = new javax.swing.JPanel();
         jScrollPaneCards = new javax.swing.JScrollPane();
         jTableCards = new javax.swing.JTable();
@@ -99,6 +101,8 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabelprice.setText("price");
+
         javax.swing.GroupLayout jPanelDetailsLayout = new javax.swing.GroupLayout(jPanelDetails);
         jPanelDetails.setLayout(jPanelDetailsLayout);
         jPanelDetailsLayout.setHorizontalGroup(
@@ -107,8 +111,10 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanelRegions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(93, 93, 93)
-                .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                .addGap(164, 164, 164))
+                .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+                .addGap(83, 83, 83)
+                .addComponent(jLabelprice)
+                .addGap(44, 44, 44))
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addGap(182, 182, 182)
                 .addComponent(jButtonShowCardDetails)
@@ -123,7 +129,9 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButtonShowCardDetails))
                     .addGroup(jPanelDetailsLayout.createSequentialGroup()
-                        .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelprice))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
@@ -206,8 +214,24 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonShowCardDetailsActionPerformed
 
+    //this button is for selecting a region from the list
     private void jButtonRegionSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegionSelectActionPerformed
-        //DO THIS NOWWWWWWWWWWWWWWWWWWWW NOWWWW NOW ASAP
+        int selectedIndex = jListRegions.getSelectedIndex();
+        if (selectedIndex >= 0) {
+            String selectedRegionName = jListRegions.getModel().getElementAt(selectedIndex);
+            Region selectedRegion = regionDAO.getAllRegions().stream()
+                    .filter(region -> region.getRegionName().equals(selectedRegionName))
+                    .findFirst()
+                    .orElse(null);
+            if (selectedRegion != null) {
+                float newprice = regionDAO.getPrice(selectedRegion.getRegionName(),expansionId);
+                String newtext =  newprice + selectedRegion.getCurrency();
+                jLabelprice.setText(newtext);
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select a region from the list.", "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
+
     }//GEN-LAST:event_jButtonRegionSelectActionPerformed
 
     /**
@@ -249,6 +273,7 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
     private javax.swing.JPanel CardsPanel;
     private javax.swing.JButton jButtonRegionSelect;
     private javax.swing.JButton jButtonShowCardDetails;
+    private javax.swing.JLabel jLabelprice;
     private javax.swing.JList<String> jListRegions;
     private javax.swing.JPanel jPanelDetails;
     private javax.swing.JPanel jPanelRegions;
@@ -290,6 +315,7 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
         }
     }
     private List<Card> getExpansionCards(int expansionId){
+        this.expansionId = expansionId;
         return cardDAO.getExpansionCards(expansionId);
     }
     private List<Region> getAllRegions() {
