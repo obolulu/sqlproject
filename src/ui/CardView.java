@@ -5,7 +5,11 @@
 package ui;
 
 import dao.CardDAO;
+import dao.CardErrataDAO;
 import dto.CardDetailsDTO;
+import model.CardErrata;
+
+import java.util.List;
 
 /**
  *
@@ -13,6 +17,7 @@ import dto.CardDetailsDTO;
  */
 public class CardView extends javax.swing.JFrame {
     CardDAO cardDAO = new CardDAO();
+    CardErrataDAO errataDAO = new CardErrataDAO();
     /**
      * Creates new form CardView
      */
@@ -20,7 +25,20 @@ public class CardView extends javax.swing.JFrame {
         initComponents();
         setCardDetailsUI(cardDetails);
     }
+    private void displayCardErrata(int cardId) {
+        List<CardErrata> errataList = errataDAO.getErrataForCard(cardId);
+        if (errataList.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No errata found for this card.", "Info", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
+        StringBuilder errataText = new StringBuilder("Errata for Card ID " + cardId + ":\n");
+        for (CardErrata erratum : errataList) {
+            errataText.append("- ").append(erratum.getDescription()).append("\n");
+        }
+
+        javax.swing.JOptionPane.showMessageDialog(this, errataText.toString(), "Card Errata", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,6 +60,7 @@ public class CardView extends javax.swing.JFrame {
         jLabelId = new javax.swing.JLabel();
         jTextFieldId = new javax.swing.JTextField();
         jButtonSearch = new javax.swing.JButton();
+        jButtonErrata = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,6 +118,13 @@ public class CardView extends javax.swing.JFrame {
             }
         });
 
+        jButtonErrata.setText("Show Errata");
+        jButtonErrata.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonErrataActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -128,8 +154,10 @@ public class CardView extends javax.swing.JFrame {
                         .addGap(72, 72, 72)
                         .addComponent(jTextFieldId, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonSearch)
-                .addGap(49, 49, 49))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonErrata, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(46, 46, 46))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addGap(16, 16, 16)
@@ -142,8 +170,10 @@ public class CardView extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabelId)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextFieldId, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldId, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonErrata)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jButtonSearch)))
@@ -216,6 +246,16 @@ public class CardView extends javax.swing.JFrame {
         setCardDetailsUI(cardDAO.getCardDetails(Integer.parseInt(cardId)));
     }//GEN-LAST:event_jButtonSearchActionPerformed
 
+    private void jButtonErrataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonErrataActionPerformed
+        String cardIdText = jTextFieldId.getText();
+        if (cardIdText.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter a card ID to view errata.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int cardId = Integer.parseInt(cardIdText);
+        displayCardErrata(cardId);
+    }//GEN-LAST:event_jButtonErrataActionPerformed
+
     private void setCardDetailsUI(CardDetailsDTO cardDetails) {
         jLabelId.setText("ID: " + cardDetails.getCardId());
         jTextFieldId.setText(String.valueOf(cardDetails.getCardId()));
@@ -262,6 +302,7 @@ public class CardView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonErrata;
     private javax.swing.JButton jButtonRemove;
     private javax.swing.JButton jButtonSearch;
     private javax.swing.JButton jButtonUpdate;

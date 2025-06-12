@@ -5,10 +5,12 @@
 package ui;
 
 import dao.CardDAO;
+import dao.CardErrataDAO;
 import dao.RegionDAO;
 import dto.CardDetailsDTO;
 import java.util.List;
 import model.Card;
+import model.CardErrata;
 import model.Region;
 
 /**
@@ -18,6 +20,7 @@ import model.Region;
 public class CardsByExpansionFrame extends javax.swing.JFrame {
     CardDAO cardDAO = new CardDAO();
     private RegionDAO regionDAO = new RegionDAO();
+    private CardErrataDAO errataDAO = new CardErrataDAO();
     private int expansionId;
     /**
      * Creates new form CardsByExpansionFrame
