@@ -5,13 +5,20 @@
 package ui;
 
 
+import dao.ExpansionDAO;
 import dao.PlayerDAO;
+
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+import dao.PlayerExpansionDAO;
+import model.Expansion;
 import model.Player;
 
 /**
@@ -25,11 +32,14 @@ public class PlayersFrame extends javax.swing.JFrame {
      */
     
     private PlayerDAO playerDAO;
-    
-    
+    private PlayerExpansionDAO playerExpansionDAO;
+
+    private ExpansionDAO expansionDAO;
     public PlayersFrame() {
         initComponents();
         playerDAO = new PlayerDAO();
+        playerExpansionDAO = new PlayerExpansionDAO();
+        expansionDAO = new ExpansionDAO();
         loadPlayersTable();
         jTablePlayers.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                     @Override
@@ -81,7 +91,42 @@ public class PlayersFrame extends javax.swing.JFrame {
             });
         }
     }
+
+    private void loadPlayerExpansions(){
+        int selectedRow = jTablePlayers.getSelectedRow();
+        if (selectedRow == -1) {
+            return;
+        }
+        int playerId = (Integer) jTablePlayers.getValueAt(selectedRow, 0);
         
+        // Load owned expansions
+        List<Expansion> ownedExpansions = playerExpansionDAO.getExpansionsOwnedByPlayer(playerId);
+        
+        // Create new DefaultListModel for owned expansions
+        DefaultListModel<String> ownedModel = new DefaultListModel<>();
+        for (Expansion exp : ownedExpansions) {
+            ownedModel.addElement(exp.getExpansionId() + " " + exp.getName());
+        }
+        jListOwnedExpansion.setModel(ownedModel);
+
+        // Load unowned expansions
+        List<Expansion> unownedExpansions = new ArrayList<>();
+        List<Expansion> allExpansions = expansionDAO.getAllExpansions();
+        for (Expansion exp : allExpansions) {
+            if (!ownedExpansions.contains(exp)) {
+                unownedExpansions.add(exp);
+            }
+        }
+        
+        // Create new DefaultListModel for unowned expansions
+        DefaultListModel<String> unownedModel = new DefaultListModel<>();
+        for (Expansion exp : unownedExpansions) {
+            unownedModel.addElement(exp.getExpansionId() + " " + exp.getName());
+        }
+        jListUnownedExpansions.setModel(unownedModel);
+    }
+
+
     private void displaySelectedPlayer() {
         int selectedRow = jTablePlayers.getSelectedRow();
         if (selectedRow == -1) {
@@ -98,10 +143,12 @@ public class PlayersFrame extends javax.swing.JFrame {
             jTextFieldEmail.setText(player.getEmail());
             jButtonUpdate.setEnabled(true);
             jButtonDelete.setEnabled(true);
+            loadPlayerExpansions();
         } else {
             JOptionPane.showMessageDialog(this, "Player not found ", "Error", JOptionPane.ERROR_MESSAGE);
             clearForm();
         }
+
     }
 
     /**
@@ -129,10 +176,12 @@ public class PlayersFrame extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPanePlayers = new javax.swing.JScrollPane();
         jTablePlayers = new javax.swing.JTable();
-        jScrollPaneOwnedExps = new javax.swing.JScrollPane();
-        jTableOwnedExps = new javax.swing.JTable();
-        jScrollPaneUnownedExps = new javax.swing.JScrollPane();
-        jTableUnownedExps = new javax.swing.JTable();
+        jButtonAddExpansion = new javax.swing.JButton();
+        jButtonRemoveExpansion = new javax.swing.JButton();
+        jScrollPaneUnownedExpansions = new javax.swing.JScrollPane();
+        jListUnownedExpansions = new javax.swing.JList<>();
+        jScrollPaneOwnedExpansions = new javax.swing.JScrollPane();
+        jListOwnedExpansion = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -211,57 +260,73 @@ public class PlayersFrame extends javax.swing.JFrame {
         ));
         jScrollPanePlayers.setViewportView(jTablePlayers);
 
-        jTableOwnedExps.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
+        jButtonAddExpansion.setText("add");
+        jButtonAddExpansion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddExpansionActionPerformed(evt);
             }
-        ));
-        jScrollPaneOwnedExps.setViewportView(jTableOwnedExps);
+        });
 
-        jTableUnownedExps.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
+        jButtonRemoveExpansion.setText("remove");
+        jButtonRemoveExpansion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRemoveExpansionActionPerformed(evt);
             }
-        ));
-        jScrollPaneUnownedExps.setViewportView(jTableUnownedExps);
+        });
+
+        jListUnownedExpansions.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPaneUnownedExpansions.setViewportView(jListUnownedExpansions);
+
+        jListOwnedExpansion.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPaneOwnedExpansions.setViewportView(jListOwnedExpansion);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jScrollPaneOwnedExps, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69)
-                .addComponent(jScrollPaneUnownedExps, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPanePlayers, javax.swing.GroupLayout.PREFERRED_SIZE, 602, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(399, 399, 399))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(115, 115, 115)
+                        .addComponent(jButtonAddExpansion)
+                        .addGap(239, 239, 239)
+                        .addComponent(jButtonRemoveExpansion))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(49, 49, 49)
+                        .addComponent(jScrollPaneOwnedExpansions, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)
+                        .addComponent(jScrollPaneUnownedExpansions, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPanePlayers, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonAddExpansion)
+                    .addComponent(jButtonRemoveExpansion))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPaneOwnedExps, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPaneUnownedExps, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(92, 92, 92))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addComponent(jScrollPaneUnownedExpansions, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jScrollPaneOwnedExpansions)))
+                .addGap(148, 148, 148))
         );
 
         javax.swing.GroupLayout PlayerDetailsLayout = new javax.swing.GroupLayout(PlayerDetails);
@@ -451,6 +516,50 @@ public class PlayersFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonUpdateActionPerformed
 
+    private void jButtonAddExpansionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddExpansionActionPerformed
+        int selectedRow = jListUnownedExpansions.getSelectedIndex();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an expansion to add.", "Selection Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int expansionId = Integer.parseInt(jListUnownedExpansions.getModel().getElementAt(selectedRow).split(" ")[0]);
+
+        int playerId = Integer.parseInt(jTextFieldPlayerId.getText());
+        boolean added = playerExpansionDAO.addPlayerExpansion(playerId, expansionId);
+
+        if (added) {
+            JOptionPane.showMessageDialog(this, "Expansion added to player.", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            loadPlayerExpansions();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to add expansion. Check console for details.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButtonAddExpansionActionPerformed
+
+    private void jButtonRemoveExpansionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoveExpansionActionPerformed
+        int selectedRow = jListOwnedExpansion.getSelectedIndex();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an owned expansion to remove.", "Selection Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int playerId = Integer.parseInt(jTextFieldPlayerId.getText());
+        int expansionId = Integer.parseInt(jListOwnedExpansion.getModel().getElementAt(selectedRow).split(" ")[0]);
+        boolean removed = playerExpansionDAO.removePlayerExpansion(playerId, expansionId);
+
+        if (removed) {
+            JOptionPane.showMessageDialog(this, "Expansion removed from player.", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            loadPlayerExpansions();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to remove expansion. Check console for details.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButtonRemoveExpansionActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -493,16 +602,18 @@ public class PlayersFrame extends javax.swing.JFrame {
     private javax.swing.JLabel RealName;
     private javax.swing.JLabel Username;
     private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonAddExpansion;
     private javax.swing.JButton jButtonClearForm;
     private javax.swing.JButton jButtonDelete;
+    private javax.swing.JButton jButtonRemoveExpansion;
     private javax.swing.JButton jButtonUpdate;
+    private javax.swing.JList<String> jListOwnedExpansion;
+    private javax.swing.JList<String> jListUnownedExpansions;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPaneOwnedExps;
+    private javax.swing.JScrollPane jScrollPaneOwnedExpansions;
     private javax.swing.JScrollPane jScrollPanePlayers;
-    private javax.swing.JScrollPane jScrollPaneUnownedExps;
-    private javax.swing.JTable jTableOwnedExps;
+    private javax.swing.JScrollPane jScrollPaneUnownedExpansions;
     private javax.swing.JTable jTablePlayers;
-    private javax.swing.JTable jTableUnownedExps;
     private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldPlayerId;
     private javax.swing.JTextField jTextFieldRealName;

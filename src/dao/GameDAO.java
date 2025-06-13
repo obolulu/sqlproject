@@ -187,6 +187,50 @@ public class GameDAO {
         }
         return supplyCards;
     }
+
+    public boolean setWinner(int gameId, int playerId) {
+        String sql = "UPDATE Games SET winner_player_id = ? WHERE game_id = ?";
+        boolean updated = false;
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, playerId);
+            pstmt.setInt(2, gameId);
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                updated = true;
+                System.out.println("Winner for Game ID " + gameId + " set to Player ID " + playerId + ".");
+            } else {
+                System.out.println("No game found with ID " + gameId + " to update winner.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error setting game winner: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return updated;
+    }
+
+    public boolean assignTurnOrder(int gameId, int playerId, Integer turnOrder) {
+        String sql = "UPDATE GameParticipants SET turn_order = ? WHERE game_id = ? AND player_id = ?";
+        boolean updated = false;
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setObject(1, turnOrder, java.sql.Types.INTEGER);
+            pstmt.setInt(2, gameId);
+            pstmt.setInt(3, playerId);
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                updated = true;
+                System.out.println("Turn order for Player ID " + playerId + " in Game ID " + gameId + " updated to " + turnOrder + ".");
+            } else {
+                System.out.println("No participant found for Player ID " + playerId + " in Game ID " + gameId + ".");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error updating turn order: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return updated;
+    }
+
     public List<GameParticipantDTO> getGameParticipants(int gameId) {
         List<GameParticipantDTO> participants = new ArrayList<>();
         String sql = "SELECT gp.player_id, p.username, p.real_name, gp.final_score, gp.turn_order " +

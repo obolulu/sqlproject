@@ -154,6 +154,11 @@ public class NewGameDialog extends javax.swing.JDialog {
 
         buttonGroup1.add(jRadioButtonSelectExpansions);
         jRadioButtonSelectExpansions.setText("Select Expansions");
+        jRadioButtonSelectExpansions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonSelectExpansionsActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(jRadioButtonUseOwnedExpansions);
         jRadioButtonUseOwnedExpansions.setText("Use Owned");
@@ -342,9 +347,14 @@ public class NewGameDialog extends javax.swing.JDialog {
         toggleExpansionSelectionVisibility(); // Adjust visibility based on selection
     }//GEN-LAST:event_jButtonRemovePlayerActionPerformed
 
+    private void jRadioButtonSelectExpansionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonSelectExpansionsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButtonSelectExpansionsActionPerformed
+
     /**
      * @param args the command line arguments
      */
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

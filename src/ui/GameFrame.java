@@ -7,10 +7,12 @@ package ui;
 import dao.GameDAO;
 import dao.PlayerDAO;
 import dto.GameSummaryDTO;
+import model.Player;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
 /**
  *
@@ -87,7 +89,7 @@ public class GameFrame extends javax.swing.JFrame {
             var players = gameSummary.getParticipants();
             DefaultTableModel playersModel = new DefaultTableModel(
                     new Object[][]{},
-                    new String[]{"Player ID", "Username", "Real Name", "Final Score", "Turn Order"}
+                    new String[]{"Player ID", "Username", "Real Name", "Turn Order", "Final Score"}
             );
             players.forEach(player -> {
                 Object[] row = new Object[]{
@@ -100,7 +102,6 @@ public class GameFrame extends javax.swing.JFrame {
             });
             jTablePlayers.setModel(playersModel);
 
-            // Populate supplies table
             var supplies = gameSummary.getKingdomCards();
             DefaultTableModel suppliesModel = new DefaultTableModel(
                     new Object[][]{},
@@ -118,6 +119,19 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }
 
+    void setWinner(Player player) {
+        int selectedRow = jTableGames.getSelectedRow();
+        if (selectedRow != -1) {
+            int gameId = (int) jTableGames.getValueAt(selectedRow, 0);
+            gameDAO.setWinner(gameId, player.getPlayerId());
+            loadGamesTable();
+            clearGameForm();
+        } else {
+            System.out.println("No game selected.");
+        }
+    }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -130,11 +144,6 @@ public class GameFrame extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableGames = new javax.swing.JTable();
-        jTableGames.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {},
-                new String [] {
-                        "Game ID", "Winner Player ID"
-                }));
         jButtonDetails = new javax.swing.JButton();
         jButtonNewGame = new javax.swing.JButton();
         jPanelDetails = new javax.swing.JPanel();
@@ -142,6 +151,7 @@ public class GameFrame extends javax.swing.JFrame {
         jTablePlayers = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTableSupplies = new javax.swing.JTable();
+        jButtonSetWinner = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -203,6 +213,13 @@ public class GameFrame extends javax.swing.JFrame {
         ));
         jScrollPane3.setViewportView(jTableSupplies);
 
+        jButtonSetWinner.setText("setWinner");
+        jButtonSetWinner.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSetWinnerActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelDetailsLayout = new javax.swing.GroupLayout(jPanelDetails);
         jPanelDetails.setLayout(jPanelDetailsLayout);
         jPanelDetailsLayout.setHorizontalGroup(
@@ -213,11 +230,17 @@ public class GameFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                .addGap(205, 205, 205)
+                .addComponent(jButtonSetWinner)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelDetailsLayout.setVerticalGroup(
             jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
-                .addGap(61, 61, 61)
+                .addGap(20, 20, 20)
+                .addComponent(jButtonSetWinner)
+                .addGap(18, 18, 18)
                 .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -278,6 +301,12 @@ public class GameFrame extends javax.swing.JFrame {
             clearGameForm();
         }    }//GEN-LAST:event_jButtonNewGameActionPerformed
 
+    private void jButtonSetWinnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetWinnerActionPerformed
+        setWinner(playerDAO.getPlayerById(
+                (int) jTablePlayers.getValueAt(jTablePlayers.getSelectedRow(), 0)
+        ));
+    }//GEN-LAST:event_jButtonSetWinnerActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -316,6 +345,7 @@ public class GameFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonDetails;
     private javax.swing.JButton jButtonNewGame;
+    private javax.swing.JButton jButtonSetWinner;
     private javax.swing.JPanel jPanelDetails;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
