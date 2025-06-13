@@ -7,11 +7,7 @@ package dao;
 import model.Player;
 import util.DatabaseConnector;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,20 +91,20 @@ public class PlayerDAO {
     }
      
      public int addPlayer(Player player) {
-        String sql = "INSERT INTO Players (username, real_name, email) VALUES (?, ?, ?)";
+         String sql = "{? = call fn_addPlayer(?, ?, ?)}";
         int generatedId = -1;
 
         try (Connection conn = DatabaseConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             CallableStatement cstmt = conn.prepareCall(sql)) {
 
-            pstmt.setString(1, player.getUsername());
-            pstmt.setString(2, player.getRealName());
-            pstmt.setString(3, player.getEmail());
+            cstmt.setString(1, player.getUsername());
+            cstmt.setString(2, player.getRealName());
+            cstmt.setString(3, player.getEmail());
 
-            int affectedRows = pstmt.executeUpdate();
+            int affectedRows = cstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                try (ResultSet rs = cstmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         generatedId = rs.getInt(1);
                         player.setPlayerId(generatedId);
