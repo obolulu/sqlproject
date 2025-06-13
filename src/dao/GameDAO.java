@@ -7,12 +7,7 @@ import model.Game;
 import model.Player;
 import util.DatabaseConnector;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 public class GameDAO {
@@ -24,12 +19,12 @@ public class GameDAO {
         cardDAO = new CardDAO();
     }
     public Game getGameById(int gameId) {
-        String sql = "SELECT game_id, winner_player_id FROM Games WHERE game_id = ?";
+        String sql = "{call sp_getGameById(?)}";
         Game game = null;
         try (Connection conn = DatabaseConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, gameId);
-            try (ResultSet rs = pstmt.executeQuery()) {
+             CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(1, gameId);
+            try (ResultSet rs = cstmt.executeQuery()) {
                 if (rs.next()) {
                     game = new Game(
                             rs.getInt("game_id"),
@@ -45,10 +40,10 @@ public class GameDAO {
     }
     public List<Game> getAllGames() {
         List<Game> games = new ArrayList<>();
-        String sql = "SELECT game_id, game_date, winner_player_id FROM Games ORDER BY game_date DESC";
+        String sql = "{call sp_getAllGames()}";
         try (Connection conn = DatabaseConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             CallableStatement cstmt = conn.prepareCall(sql);
+             ResultSet rs = cstmt.executeQuery()) {
             while (rs.next()) {
                 games.add(new Game(
                         rs.getInt("game_id"),
