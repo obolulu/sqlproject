@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -306,6 +307,79 @@ public class CardDAO {
             System.err.println("Error fetching cards by expansion ID: " + e.getMessage());
             e.printStackTrace();
         }
+        return cards;
+    }
+
+    public List<Card> searchCardsByName(String searchTerm) {
+        List<Card> cards = new ArrayList<>();
+        String sql = "SELECT card_id, name, cost_coins, cost_potions, cost_debt, " +
+                "text_description, expansion_id FROM Cards " +
+                "WHERE LOWER(name) LIKE LOWER(CONCAT('%', ?, '%')) " +
+                "ORDER BY cost_coins, name";
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, searchTerm);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    cards.add(new Card(
+                            rs.getInt("card_id"),
+                            rs.getString("name"),
+                            rs.getInt("cost_coins"),
+                            rs.getInt("cost_potions"),
+                            rs.getInt("cost_debt"),
+                            rs.getString("text_description"),
+                            rs.getInt("expansion_id")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error searching cards by name: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return cards;
+    }
+
+    /**
+     * Search cards by name within a specific expansion
+     * @param expansionId The expansion ID to search within
+     * @param searchTerm The search term to match against card names
+     * @return List of cards matching the search criteria
+     */
+    public List<Card> searchCardsByName(int expansionId, String searchTerm) {
+        List<Card> cards = new ArrayList<>();
+        String sql = "SELECT card_id, name, cost_coins, cost_potions, cost_debt, " +
+                "text_description, expansion_id FROM Cards " +
+                "WHERE expansion_id = ? AND LOWER(name) LIKE LOWER(CONCAT('%', ?, '%')) " +
+                "ORDER BY cost_coins, name";
+        
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, expansionId);
+            pstmt.setString(2, searchTerm);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    cards.add(new Card(
+                            rs.getInt("card_id"),
+                            rs.getString("name"),
+                            rs.getInt("cost_coins"),
+                            rs.getInt("cost_potions"),
+                            rs.getInt("cost_debt"),
+                            rs.getString("text_description"),
+                            rs.getInt("expansion_id")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error searching cards by name: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
         return cards;
     }
 }

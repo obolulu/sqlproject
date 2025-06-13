@@ -9,6 +9,9 @@ import dao.CardErrataDAO;
 import dao.RegionDAO;
 import dto.CardDetailsDTO;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import model.Card;
 import model.CardErrata;
 import model.Region;
@@ -47,8 +50,11 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
         jListRegions = new javax.swing.JList<>();
         jButtonRegionSelect = new javax.swing.JButton();
         jTextFieldExpansionName = new javax.swing.JTextField();
-        jButtonShowCardDetails = new javax.swing.JButton();
         jLabelprice = new javax.swing.JLabel();
+        jPanelSearch = new javax.swing.JPanel();
+        jLabelSearch = new javax.swing.JLabel();
+        jTextFieldSearch = new javax.swing.JTextField();
+        jButtonShowCardDetails = new javax.swing.JButton();
         CardsPanel = new javax.swing.JPanel();
         jScrollPaneCards = new javax.swing.JScrollPane();
         jTableCards = new javax.swing.JTable();
@@ -97,6 +103,37 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabelprice.setText("price");
+
+        jPanelSearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabelSearch.setText("search");
+
+        jTextFieldSearch.setMinimumSize(new java.awt.Dimension(64, 300));
+
+        javax.swing.GroupLayout jPanelSearchLayout = new javax.swing.GroupLayout(jPanelSearch);
+        jPanelSearch.setLayout(jPanelSearchLayout);
+        jPanelSearchLayout.setHorizontalGroup(
+            jPanelSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelSearchLayout.createSequentialGroup()
+                .addGap(49, 49, 49)
+                .addComponent(jLabelSearch)
+                .addContainerGap(44, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelSearchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTextFieldSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanelSearchLayout.setVerticalGroup(
+            jPanelSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelSearchLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabelSearch)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jTextFieldSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
+        );
+
         jButtonShowCardDetails.setText("Show Card Details");
         jButtonShowCardDetails.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -104,38 +141,39 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabelprice.setText("price");
-
         javax.swing.GroupLayout jPanelDetailsLayout = new javax.swing.GroupLayout(jPanelDetails);
         jPanelDetails.setLayout(jPanelDetailsLayout);
         jPanelDetailsLayout.setHorizontalGroup(
             jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelDetailsLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanelRegions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(93, 93, 93)
-                .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
-                .addGap(83, 83, 83)
-                .addComponent(jLabelprice)
+                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jPanelSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(62, 62, 62)
+                        .addComponent(jButtonShowCardDetails))
+                    .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                        .addComponent(jPanelRegions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(93, 93, 93)
+                        .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                        .addGap(83, 83, 83)
+                        .addComponent(jLabelprice)))
                 .addGap(44, 44, 44))
-            .addGroup(jPanelDetailsLayout.createSequentialGroup()
-                .addGap(182, 182, 182)
-                .addComponent(jButtonShowCardDetails)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelDetailsLayout.setVerticalGroup(
             jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelprice))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanelDetailsLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButtonShowCardDetails))
-                    .addGroup(jPanelDetailsLayout.createSequentialGroup()
-                        .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextFieldExpansionName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelprice))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jPanelSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDetailsLayout.createSequentialGroup()
+                        .addComponent(jButtonShowCardDetails)
+                        .addGap(10, 10, 10)))
                 .addContainerGap())
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addComponent(jPanelRegions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -162,7 +200,7 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
         CardsPanel.setLayout(CardsPanelLayout);
         CardsPanelLayout.setHorizontalGroup(
             CardsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPaneCards, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+            .addComponent(jScrollPaneCards, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
         );
         CardsPanelLayout.setVerticalGroup(
             CardsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -276,14 +314,17 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
     private javax.swing.JPanel CardsPanel;
     private javax.swing.JButton jButtonRegionSelect;
     private javax.swing.JButton jButtonShowCardDetails;
+    private javax.swing.JLabel jLabelSearch;
     private javax.swing.JLabel jLabelprice;
     private javax.swing.JList<String> jListRegions;
     private javax.swing.JPanel jPanelDetails;
     private javax.swing.JPanel jPanelRegions;
+    private javax.swing.JPanel jPanelSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPaneCards;
     private javax.swing.JTable jTableCards;
     private javax.swing.JTextField jTextFieldExpansionName;
+    private javax.swing.JTextField jTextFieldSearch;
     // End of variables declaration//GEN-END:variables
 
     private void setExpansionData(int expansionId,String expansionName) {
@@ -295,6 +336,7 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
             setScrollPane(cards);
         }
         setRegionList();
+        setupSearchListener();
     }
     private void setScrollPane(List<Card> cards) {
         jTableCards.setModel(new javax.swing.table.DefaultTableModel(
@@ -323,5 +365,46 @@ public class CardsByExpansionFrame extends javax.swing.JFrame {
     }
     private List<Region> getAllRegions() {
         return regionDAO.getAllRegions();
+    }
+    private void setupSearchListener() {
+        jTextFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterCards();
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterCards();
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterCards();
+            }
+        });
+    }
+    
+    private void filterCards() {
+        String searchText = jTextFieldSearch.getText().toLowerCase();
+        List<Card> filteredCards = cardDAO.searchCardsByName(expansionId,searchText);
+        if (filteredCards.isEmpty()) {
+            jTableCards.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{},
+                new String[]{"ID", "Name", "Cost Coins", "Cost Potions", "Cost Debt", "Description"}
+            ));
+        } else {
+            jTableCards.setModel(new javax.swing.table.DefaultTableModel(
+                filteredCards.stream().map(card -> new Object[]{
+                    card.getCardId(),
+                    card.getName(),
+                    card.getCostCoins(),
+                    card.getCostPotions(),
+                    card.getCostDebt(),
+                    card.getTextDescription()
+                }).toArray(Object[][]::new),
+                new String[]{"ID", "Name", "Cost Coins", "Cost Potions", "Cost Debt", "Description"}
+            ));
+        }
     }
 }

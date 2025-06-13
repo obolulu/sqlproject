@@ -256,6 +256,8 @@ public class CardView extends javax.swing.JFrame {
         displayCardErrata(cardId);
     }//GEN-LAST:event_jButtonErrataActionPerformed
 
+
+
     private void setCardDetailsUI(CardDetailsDTO cardDetails) {
         jLabelId.setText("ID: " + cardDetails.getCardId());
         jTextFieldId.setText(String.valueOf(cardDetails.getCardId()));
