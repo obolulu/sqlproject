@@ -72,11 +72,7 @@ public class PlayersFrame extends javax.swing.JFrame {
         private void loadPlayersTable() {
         DefaultTableModel model = (DefaultTableModel) jTablePlayers.getModel();
         model.setRowCount(0);
-           
-        
-        //dynamically creates the rows
-        //no need to modify if they are entered later on in UI instead of
-        // from here
+
         if (model.getColumnCount() == 0) {
             model.setColumnIdentifiers(new Object[]{"ID", "Username", "Real Name", "Email"});
         }
@@ -99,17 +95,14 @@ public class PlayersFrame extends javax.swing.JFrame {
         }
         int playerId = (Integer) jTablePlayers.getValueAt(selectedRow, 0);
         
-        // Load owned expansions
         List<Expansion> ownedExpansions = playerExpansionDAO.getExpansionsOwnedByPlayer(playerId);
         
-        // Create new DefaultListModel for owned expansions
         DefaultListModel<String> ownedModel = new DefaultListModel<>();
         for (Expansion exp : ownedExpansions) {
             ownedModel.addElement(exp.getExpansionId() + " " + exp.getName());
         }
         jListOwnedExpansion.setModel(ownedModel);
 
-        // Load unowned expansions
         List<Expansion> unownedExpansions = new ArrayList<>();
         List<Expansion> allExpansions = expansionDAO.getAllExpansions();
         for (Expansion exp : allExpansions) {

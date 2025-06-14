@@ -51,6 +51,7 @@ public class NewGameDialog extends javax.swing.JDialog {
         availableExpansionsListModel = new DefaultListModel<>();
         kingdomCardsListModel = new DefaultListModel<>();
 
+
         jListAvailablePlayers.setModel(availablePlayersListModel);
         jListGamePlayers.setModel(gamePlayersListModel);
         //jListAvailableExpansions.setModel(availableExpansionsListModel);
@@ -89,6 +90,8 @@ public class NewGameDialog extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jRadioButtonSelectExpansions = new javax.swing.JRadioButton();
         jRadioButtonUseOwnedExpansions = new javax.swing.JRadioButton();
+        jScrollPaneExpansionSelect = new javax.swing.JScrollPane();
+        jListExpansionSelect = new javax.swing.JList<>();
         jPanelKingdom = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jListKingdomCards = new javax.swing.JList<>();
@@ -163,15 +166,24 @@ public class NewGameDialog extends javax.swing.JDialog {
         buttonGroup1.add(jRadioButtonUseOwnedExpansions);
         jRadioButtonUseOwnedExpansions.setText("Use Owned");
 
+        jListExpansionSelect.setModel(new javax.swing.AbstractListModel<Expansion>() {
+            Expansion[] exps = { };
+            public int getSize() { return exps.length; }
+            public Expansion getElementAt(int i) { return exps[i]; }
+        });
+        jScrollPaneExpansionSelect.setViewportView(jListExpansionSelect);
+        jListAvailablePlayers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButtonSelectExpansions)
-                    .addComponent(jRadioButtonUseOwnedExpansions))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jRadioButtonSelectExpansions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jRadioButtonUseOwnedExpansions)
+                    .addComponent(jScrollPaneExpansionSelect))
                 .addContainerGap(65, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -180,7 +192,9 @@ public class NewGameDialog extends javax.swing.JDialog {
                 .addComponent(jRadioButtonSelectExpansions)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButtonUseOwnedExpansions)
-                .addGap(0, 94, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPaneExpansionSelect, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jPanelKingdom.setBorder(javax.swing.BorderFactory.createTitledBorder("Kingdom Overview"));
@@ -249,7 +263,7 @@ public class NewGameDialog extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(9, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanelKingdom, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -271,6 +285,13 @@ public class NewGameDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void popuşateAvailableExpansions() {
+        availableExpansionsListModel.clear();
+        expansionDAO.getAllExpansions().forEach(availableExpansionsListModel::addElement);
+    }
+
+
 
     private void jButtonConfirmKingdomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConfirmKingdomActionPerformed
         if (gamePlayersListModel.isEmpty()) {
@@ -359,7 +380,7 @@ public class NewGameDialog extends javax.swing.JDialog {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -394,6 +415,8 @@ public class NewGameDialog extends javax.swing.JDialog {
         });
     }
 
+    
+
     private void generateKingdom() {
         kingdomCardsListModel.clear();
         //using hashset so there wont be duplicate cards
@@ -425,9 +448,21 @@ public class NewGameDialog extends javax.swing.JDialog {
             }
         }
         else{
-            //IMPORTANT---!!!!
-            //FILL HERE!!! this should be for when they pick expansions from a list to use
-            // add the selected expansions to usableExpansions
+            // If the user selects expansions manually
+            List<Expansion> selectedExpansions = jListExpansionSelect.getSelectedValuesList();
+            if (selectedExpansions.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select at least one expansion to generate a kingdom.", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            // Fetch expansions based on selected names
+            for (Expansion expansion : selectedExpansions) {
+                //Expansion expansion = expansionDAO.getExpansionByName(expansionName);
+                if (expansion != null) {
+                    usableExpansions.add(expansion);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Expansion not found: " + expansion.getName(), "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
         }
         if (usableExpansions.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No expansions selected or available. Please select expansions to generate a kingdom.", "Error", JOptionPane.WARNING_MESSAGE);
@@ -477,15 +512,16 @@ public class NewGameDialog extends javax.swing.JDialog {
     private void jButtonAddPlayerToGameActionPerformed(java.awt.event.ActionEvent evt) {
         List<Player> selectedPlayers = jListAvailablePlayers.getSelectedValuesList();
         for (Player player : selectedPlayers) {
-            if (!gamePlayersListModel.contains(player)) { // Avoid duplicates
+            if (!gamePlayersListModel.contains(player)) {
                 gamePlayersListModel.addElement(player);
             }
         }
-        jListAvailablePlayers.clearSelection(); // Clear selection after moving
+        jListAvailablePlayers.clearSelection();
     }
     private void populateAvailableExpansions() {
-        availableExpansionsListModel.clear();
-        expansionDAO.getAllExpansions().forEach(availableExpansionsListModel::addElement);
+        DefaultListModel<Expansion> model = new DefaultListModel<>();
+        expansionDAO.getAllExpansions().forEach(model::addElement);
+        jListExpansionSelect.setModel(model);
     }
     private void toggleExpansionSelectionVisibility() {
         //jScrollPaneAvailableExpansions.setVisible(jRadioButtonSelectExpansions.isSelected());
@@ -503,6 +539,7 @@ public class NewGameDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButtonRemovePlayer;
     private javax.swing.JButton jButtonRerollKingdom;
     private javax.swing.JList<Player> jListAvailablePlayers;
+    private javax.swing.JList<Expansion> jListExpansionSelect;
     private javax.swing.JList<Player> jListGamePlayers;
     private javax.swing.JList<Card> jListKingdomCards;
     private javax.swing.JPanel jPanel1;
@@ -513,5 +550,6 @@ public class NewGameDialog extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPaneExpansionSelect;
     // End of variables declaration//GEN-END:variables
 }

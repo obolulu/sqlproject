@@ -44,6 +44,31 @@ public class ExpansionDAO {
         }
         return expansion;
     }
+
+    public Expansion getExpansionByName(String name) {
+        String sql = "SELECT expansion_id, name, release_date FROM Expansions WHERE name = ?";
+        Expansion expansion = null;
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // Convert java.sql.Date to java.time.LocalDate
+                    LocalDate releaseDate = rs.getDate("release_date") != null ? rs.getDate("release_date").toLocalDate() : null;
+                    expansion = new Expansion(
+                        rs.getInt("expansion_id"),
+                        rs.getString("name"),
+                        releaseDate
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching expansion by name: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return expansion;
+    }
+
     public List<Expansion> getAllExpansions() {
     List<Expansion> expansions = new ArrayList<>();
     String sql = "SELECT expansion_id, name, release_date FROM Expansions ORDER BY release_date ASC";
