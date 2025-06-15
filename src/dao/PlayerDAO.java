@@ -97,21 +97,16 @@ public class PlayerDAO {
         try (Connection conn = DatabaseConnector.getConnection();
              CallableStatement cstmt = conn.prepareCall(sql)) {
 
-            cstmt.setString(1, player.getUsername());
-            cstmt.setString(2, player.getRealName());
-            cstmt.setString(3, player.getEmail());
+            cstmt.registerOutParameter(1, Types.INTEGER);
 
-            int affectedRows = cstmt.executeUpdate();
+            cstmt.setString(2, player.getUsername());
+            cstmt.setString(3, player.getRealName());
+            cstmt.setString(4, player.getEmail());
 
-            if (affectedRows > 0) {
-                try (ResultSet rs = cstmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        generatedId = rs.getInt(1);
-                        player.setPlayerId(generatedId);
-                        System.out.println("Player '" + player.getUsername() + "' added successfully with ID: " + generatedId);
-                    }
-                }
-            }
+            cstmt.execute();
+
+            generatedId = cstmt.getInt(1);
+            player.setPlayerId(generatedId);
         } catch (SQLException e) {
             System.err.println("Error adding player: " + e.getMessage());
             e.printStackTrace();

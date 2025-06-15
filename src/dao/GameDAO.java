@@ -123,14 +123,14 @@ public class GameDAO {
         return deleted;
     }
     public boolean addGameParticipant(int gameId, int playerId, Integer finalScore, Integer turnOrder) {
-        // Using INSERT IGNORE to prevent adding the same participant multiple times
+        // Using INSERT IGNORE to prevent duplicates
         String sql = "INSERT IGNORE INTO GameParticipants (game_id, player_id, final_score, turn_order) VALUES (?, ?, ?, ?)";
         boolean added = false;
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, gameId);
             pstmt.setInt(2, playerId);
-            pstmt.setObject(3, finalScore, java.sql.Types.INTEGER); // Use setObject for nullable Integer
+            pstmt.setObject(3, finalScore, java.sql.Types.INTEGER);
             pstmt.setObject(4, turnOrder, java.sql.Types.INTEGER);
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) { // A new row was inserted

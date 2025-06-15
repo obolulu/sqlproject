@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,8 @@ public class PlayersFrame extends javax.swing.JFrame {
     private PlayerExpansionDAO playerExpansionDAO;
 
     private ExpansionDAO expansionDAO;
+    private ActionEvent evt;
+
     public PlayersFrame() {
         initComponents();
         playerDAO = new PlayerDAO();
@@ -431,6 +434,7 @@ public class PlayersFrame extends javax.swing.JFrame {
 
     private void jTextFieldEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEmailActionPerformed
         // TODO add your handling code here:
+        this.evt = evt;
     }//GEN-LAST:event_jTextFieldEmailActionPerformed
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
@@ -444,9 +448,7 @@ public class PlayersFrame extends javax.swing.JFrame {
         }
         Player newPlayer = new Player(0, username, realName, email);
         int generatedID = playerDAO.addPlayer(newPlayer);
-        
-        // -1 is for error states from the database ----
-        // if return has -1 in it, it means sql database gave an error
+
         if(generatedID != -1){
             JOptionPane.showMessageDialog(this, "Player added. ID: " + generatedID, "Success",
                     JOptionPane.INFORMATION_MESSAGE);

@@ -84,7 +84,6 @@ public class GameFrame extends javax.swing.JFrame {
                 return;
             }
 
-            // Populate players table
             var players = gameSummary.getParticipants();
             DefaultTableModel playersModel = new DefaultTableModel(
                     new Object[][]{},
