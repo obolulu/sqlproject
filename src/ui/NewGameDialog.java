@@ -11,10 +11,7 @@ import model.Game;
 import model.Player;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -421,7 +418,7 @@ public class NewGameDialog extends javax.swing.JDialog {
         kingdomCardsListModel.clear();
         //using hashset so there wont be duplicate cards
         Set<Card> potentialCards = new HashSet<>();
-
+        //List<Card> kingdomCards = new ArrayList<>();
         List<Expansion> usableExpansions = new ArrayList<>();
         if (jRadioButtonUseOwnedExpansions.isSelected()) {
             if (gamePlayersListModel.isEmpty()) {
@@ -468,23 +465,24 @@ public class NewGameDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "No expansions selected or available. Please select expansions to generate a kingdom.", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        List<Card> cardsFromExpansion = new ArrayList<Card>();
         //generate kingdom cards from the usable expansions
-        for (Expansion expansion : usableExpansions) {
-            List<Card> cardsFromExpansion = cardDAO.getCardsByExpansionId(expansion.getExpansionId());
-            if (cardsFromExpansion.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No cards found for expansion: " + expansion.getName(), "Warning", JOptionPane.WARNING_MESSAGE);
-                continue;
-            }
-            //randomly selects 10 cards from exps
-            while (potentialCards.size() < 10 && !cardsFromExpansion.isEmpty()) {
-                int randomIndex = (int) (Math.random() * cardsFromExpansion.size());
-                if(isBaseCard(cardsFromExpansion.get(randomIndex).getName())) {
-                    // Skip base cards
+            for (Expansion expansion : usableExpansions) {
+                cardsFromExpansion.addAll(cardDAO.getCardsByExpansionId(expansion.getExpansionId()));
+                if (cardsFromExpansion.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No cards found for expansion: " + expansion.getName(), "Warning", JOptionPane.WARNING_MESSAGE);
                     continue;
                 }
-                potentialCards.add(cardsFromExpansion.remove(randomIndex));
-            }
-        }
+                }
+                //randomly selects 10 cards from exps
+                while (potentialCards.size() < 10 && !cardsFromExpansion.isEmpty()) {
+                    int randomIndex = (int) (Math.random() * cardsFromExpansion.size());
+                    if(isBaseCard(cardsFromExpansion.get(randomIndex).getName())) {
+                        // skip base cards
+                        continue;
+                    }
+                    potentialCards.add(cardsFromExpansion.remove(randomIndex));
+                }
         if (potentialCards.size() < 10) {
             JOptionPane.showMessageDialog(this, "Not enough unique cards available to generate a kingdom. Please select more expansions or ensure expansions have enough cards.", "Error", JOptionPane.WARNING_MESSAGE);
             return;
